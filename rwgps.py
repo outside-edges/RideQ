@@ -2,13 +2,11 @@ import os
 from dotenv import load_dotenv
 import requests
 
-
 load_dotenv()
 
 # ENDPOINTS
 RWGPS_BASE_URL = "https://ridewithgps.com/api/v1"
 ENDPOINT_TRIPS = "/trips.json"
-
 
 # ------------------------------------------------------------- #
 # RWGPS CREDENTIALS
@@ -22,7 +20,7 @@ rwgps_auth_token = os.getenv("RWGPS_AUTH_TOKEN")
 # ------------------------------------------------------------- #
 # RWGPS QUIRK: trips[0] is the most recently updated trip, not trip with most recent departed_at
 
-def get_trips():
+def rwgps_get_trips():
     """Get list of trip dictionaries from RWGPS"""
     rwgps_headers = {
         "x-rwgps-api-key": rwgps_api_key,

@@ -1,13 +1,12 @@
 import os
 from datetime import datetime
 from dotenv import load_dotenv
-from sqlalchemy import func
-from rwgps import get_trips
-from fill_database import insert_trips
+from rwgps import rwgps_get_trips
+from database_fill import insert_trips
 
 load_dotenv()
 
-trips = get_trips()
+trips = rwgps_get_trips()
 # print(len(trips))
 
 # ------------------------------------------------------------- #
@@ -21,30 +20,18 @@ def convert_datetime(timestamp):
 
 # ------------------------------------------------------------- #
 
-
-# extract ride levels from ride names
-ride_levels = ["B+", "B", "C+", "C", "Flex"]
-
-
-def get_ride_level(name):
-    """Determines ride level from trip name"""
-    for level in ride_levels:
-        if f" {level}" in name:
-            return level
-    return None
-
-# ------------------------------------------------------------- #
-
 # create RideQ trip structure from RWGPS trips
 
 
 def transform_trip(rwgps_trip):
     """Transforms RWGPS trip into trip with limited keys and added level data"""
+
     rideq_trip = {
-        "rwgps_trip_id": rwgps_trip["id"],
+        "source_trip_id": rwgps_trip["id"],
         "name": rwgps_trip["name"],
         "description": rwgps_trip["description"],
-        "ride_level": get_ride_level(rwgps_trip["name"]),
+        # "ride_category": ride_values[0],
+        # "ride_classification": ride_values[1],
         "departed_at": convert_datetime(rwgps_trip["departed_at"]),
         "fit_sport": rwgps_trip["fit_sport"],
         "fit_sub_sport": rwgps_trip["fit_sub_sport"],
@@ -82,6 +69,4 @@ def get_departed_datetime(trip):
 
 
 sorted_trips = sorted(rideq_trips, key=get_departed_datetime)
-insert_trips(sorted_trips)
-
-
+insert_trips(sorted_trips, "RWGPS")
